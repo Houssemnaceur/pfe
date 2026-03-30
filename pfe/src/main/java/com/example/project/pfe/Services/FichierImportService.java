@@ -126,11 +126,14 @@ public class FichierImportService {
 
     private String celluleEnTexte(Cell cell) {
         if (cell == null) return "";
-        return switch (cell.getCellType()) {
-            case STRING  -> cell.getStringCellValue();
-            case NUMERIC -> String.valueOf(cell.getNumericCellValue());
-            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-            default      -> "";
-        };
+        if (cell.getCellType() == CellType.STRING) {
+            return cell.getStringCellValue();
+        } else if (cell.getCellType() == CellType.NUMERIC) {
+            return String.valueOf(cell.getNumericCellValue());
+        } else if (cell.getCellType() == CellType.BOOLEAN) {
+            return String.valueOf(cell.getBooleanCellValue());
+        } else {
+            return "";
+        }
     }
 }
