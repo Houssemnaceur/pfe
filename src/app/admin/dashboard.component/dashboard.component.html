@@ -1,0 +1,60 @@
+<div class="dashboard-container">
+
+  <!-- Bienvenue -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h2>Bonjour, {{ user?.prenom }} {{ user?.nom }} 👋</h2>
+      <p>Tableau de bord administrateur — GEMONET Monoprix Tunisie</p>
+    </div>
+    <div class="welcome-icon">
+      <mat-icon>dashboard</mat-icon>
+    </div>
+  </div>
+
+  <!-- Statistiques avec signals -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon" style="color:#e30613">people</mat-icon>
+      <div class="stat-info">
+        <p class="stat-value">{{ nbUtilisateurs() }}</p>
+        <p class="stat-label">Utilisateurs</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon" style="color:#1565c0">admin_panel_settings</mat-icon>
+      <div class="stat-info">
+        <p class="stat-value">{{ nbRoles() }}</p>
+        <p class="stat-label">Rôles</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon" style="color:#2e7d32">badge</mat-icon>
+      <div class="stat-info">
+        <p class="stat-value">{{ nbProfils() }}</p>
+        <p class="stat-label">Profils</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon class="stat-icon" style="color:#e65100">store</mat-icon>
+      <div class="stat-info">
+        <p class="stat-value">{{ nbMagasins() }}</p>
+        <p class="stat-label">Magasins</p>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Accès rapides -->
+  <h3 class="section-title">Accès rapides</h3>
+  <div class="quick-links-grid">
+    @for (link of quickLinks; track link.route) {
+      <mat-card class="quick-card" [routerLink]="link.route">
+        <mat-icon [style.color]="link.color">{{ link.icon }}</mat-icon>
+        <p>{{ link.label }}</p>
+      </mat-card>
+    }
+  </div>
+
+</div>

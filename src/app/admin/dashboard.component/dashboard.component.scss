@@ -1,0 +1,127 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #e30613 0%, #b71c1c 100%);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  color: white;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  .welcome-icon mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.3;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  display: flex !important;
+  align-items: center;
+  gap: 16px;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  cursor: default;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+  }
+
+  .stat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .stat-info {
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #212121;
+      margin: 0;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #757575;
+      margin: 4px 0 0;
+    }
+  }
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #424242;
+  margin-bottom: 16px;
+}
+
+.quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.quick-card {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+  }
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #424242;
+    margin: 0;
+  }
+}

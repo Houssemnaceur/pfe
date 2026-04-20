@@ -1,0 +1,121 @@
+<div class="page-container">
+
+  <div class="page-header">
+    <div>
+      <h2>Gestion des Magasins</h2>
+      <p class="subtitle">Points de vente et entrepôts Monoprix</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> Nouveau magasin
+    </button>
+  </div>
+
+  @if (showForm()) {
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>{{ editMode() ? 'edit' : 'store' }}</mat-icon>
+          {{ editMode() ? 'Modifier le magasin' : 'Créer un magasin' }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Code magasin</mat-label>
+              <input matInput formControlName="code" placeholder="ex: MNP001">
+              <mat-icon matPrefix>qr_code</mat-icon>
+              @if (form.get('code')?.hasError('required') && form.get('code')?.touched) {
+                <mat-error>Code obligatoire</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nom du magasin</mat-label>
+              <input matInput formControlName="nom" placeholder="ex: Monoprix Kelibia">
+              <mat-icon matPrefix>store</mat-icon>
+              @if (form.get('nom')?.hasError('required') && form.get('nom')?.touched) {
+                <mat-error>Nom obligatoire</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="type">
+                @for (type of typeOptions; track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>category</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="cancel()">
+              <mat-icon>close</mat-icon> Annuler
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              <mat-icon>save</mat-icon> {{ editMode() ? 'Modifier' : 'Créer' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="loading">Chargement...</div>
+      } @else if (magasins().length === 0) {
+        <div class="empty-state">
+          <mat-icon>store</mat-icon>
+          <p>Aucun magasin enregistré</p>
+          <button mat-raised-button color="primary" (click)="openCreate()">
+            Créer le premier magasin
+          </button>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="magasins()">
+
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let m">
+              <span class="code-chip">{{ m.code }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let m"><strong>{{ m.nom }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let m">
+              <span [class]="m.type === 'MAGASIN' ? 'type-magasin' : 'type-entrepot'">
+                {{ m.type }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let m">
+              <button mat-icon-button color="primary" (click)="openEdit(m)" matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="delete(m.id)" matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      }
+    </mat-card-content>
+  </mat-card>
+
+</div>

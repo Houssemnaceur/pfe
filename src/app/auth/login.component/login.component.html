@@ -1,0 +1,79 @@
+<div class="login-container">
+  <mat-card class="login-card">
+
+    <mat-card-header class="login-header">
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <mat-icon class="logo-icon">store</mat-icon>
+        </div>
+        <h1>GEMONET</h1>
+        <p class="subtitle">Monoprix Tunisie</p>
+        <div class="divider"></div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse email</mat-label>
+          <input matInput type="email" formControlName="email"
+                 placeholder="directeur@monoprix.tn">
+          <mat-icon matPrefix style="color:#e30613; margin-right:8px">email</mat-icon>
+          @if (email?.hasError('required') && email?.touched) {
+            <mat-error>L'email est obligatoire</mat-error>
+          }
+          @if (email?.hasError('email') && email?.touched) {
+            <mat-error>Format d'email invalide</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'"
+                 formControlName="motDePasse">
+          <mat-icon matPrefix style="color:#e30613; margin-right:8px">lock</mat-icon>
+          <button mat-icon-button matSuffix type="button"
+                  (click)="hidePassword.set(!hidePassword())"
+                  style="color:#757575">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (motDePasse?.hasError('required') && motDePasse?.touched) {
+            <mat-error>Le mot de passe est obligatoire</mat-error>
+          }
+          @if (motDePasse?.hasError('minlength') && motDePasse?.touched) {
+            <mat-error>Minimum 4 caractères</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button type="submit"
+                class="full-width login-btn"
+                [disabled]="loginForm.invalid || isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="22" style="display:inline-block"></mat-spinner>
+            Connexion...
+          } @else {
+            <ng-container>
+              <mat-icon>login</mat-icon>
+              Se connecter
+            </ng-container>
+          }
+        </button>
+
+      </form>
+
+      <p class="welcome-text">
+        Plateforme de gestion &mdash; <span>Monoprix Tunisie</span>
+      </p>
+
+    </mat-card-content>
+  </mat-card>
+</div>

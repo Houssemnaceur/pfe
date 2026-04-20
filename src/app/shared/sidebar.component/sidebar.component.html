@@ -1,0 +1,121 @@
+<div class="sidebar" [class.collapsed]="!isOpen">
+
+  <!-- Header -->
+  <div class="sidebar-header">
+    <mat-icon class="header-icon">store</mat-icon>
+    <span class="header-title" *ngIf="isOpen">GEMONET</span>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Menu ADMIN -->
+  @if (isAdmin) {
+    <div class="menu-section">
+      <p class="section-label" *ngIf="isOpen">ADMINISTRATION</p>
+      <mat-nav-list>
+        @for (item of adminMenuItems; track item.route) {
+          <a mat-list-item
+             [routerLink]="item.route"
+             routerLinkActive="active-link"
+             class="nav-item"
+             [matTooltip]="!isOpen ? item.label : ''"
+             matTooltipPosition="right">
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle *ngIf="isOpen">{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </div>
+  }
+
+  <!-- Menu DIRECTEUR RÉGION -->
+  @if (!isAdmin && isRegion()) {
+    <div class="menu-section">
+      <p class="section-label" *ngIf="isOpen">MA RÉGION</p>
+      <mat-nav-list>
+
+        <!-- Lien Vue Région (dashboard région) -->
+        <a mat-list-item
+           routerLink="/metier/region"
+           routerLinkActive="active-link"
+           class="nav-item"
+           [matTooltip]="!isOpen ? 'Vue Région' : ''"
+           matTooltipPosition="right">
+          <mat-icon matListItemIcon>map</mat-icon>
+          <span matListItemTitle *ngIf="isOpen">Vue Région</span>
+        </a>
+
+        <!-- Menu expandable Magasins -->
+        @if (isOpen) {
+          <div class="region-group">
+            <!-- Header expandable -->
+            <div class="region-group-header" (click)="toggleRegion()">
+              <div class="region-group-left">
+                <mat-icon>store</mat-icon>
+                <span>Mes Magasins</span>
+              </div>
+              <mat-icon class="expand-icon" [class.expanded]="regionExpanded()">
+                expand_more
+              </mat-icon>
+            </div>
+
+            <!-- Sous-items magasins -->
+            @if (regionExpanded()) {
+              @for (item of magasinItems(); track item.route) {
+                <a mat-list-item
+                   [routerLink]="item.route"
+                   routerLinkActive="active-link"
+                   class="nav-item sub-item">
+                  <mat-icon matListItemIcon>store</mat-icon>
+                  <span matListItemTitle>{{ item.label }}</span>
+                </a>
+              }
+            }
+          </div>
+        } @else {
+          <!-- Sidebar réduite : afficher juste les icônes magasins -->
+          @for (item of magasinItems(); track item.route) {
+            <a mat-list-item
+               [routerLink]="item.route"
+               routerLinkActive="active-link"
+               class="nav-item"
+               [matTooltip]="item.label"
+               matTooltipPosition="right">
+              <mat-icon matListItemIcon>store</mat-icon>
+            </a>
+          }
+        }
+
+      </mat-nav-list>
+    </div>
+  }
+
+  <!-- Menu DIRECTEUR VILLE (simple) -->
+  @if (!isAdmin && !isRegion()) {
+    <div class="menu-section">
+      <p class="section-label" *ngIf="isOpen">MON MAGASIN</p>
+      <mat-nav-list>
+        @for (item of userMenuItems(); track item.route) {
+          <a mat-list-item
+             [routerLink]="item.route"
+             routerLinkActive="active-link"
+             class="nav-item"
+             [matTooltip]="!isOpen ? item.label : ''"
+             matTooltipPosition="right">
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle *ngIf="isOpen">{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </div>
+  }
+
+  <!-- Footer -->
+  <div class="sidebar-footer" *ngIf="isOpen">
+    <div class="user-info">
+      <p class="user-name">{{ user?.prenom }} {{ user?.nom }}</p>
+      <p class="user-role">{{ user?.role }}</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,337 @@
+<div class="region-container">
+
+  <!-- Header région -->
+  <div class="region-header">
+    <div class="header-left">
+      <mat-icon>map</mat-icon>
+      <div>
+        <h2>Vue Région</h2>
+        <p>{{ user?.prenom }} {{ user?.nom }} — Directeur Région</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      @if (rupturesTotalRegion() > 0) {
+        <span class="badge rupture">
+          <mat-icon>warning</mat-icon>
+          {{ rupturesTotalRegion() }} rupture(s)
+        </span>
+      }
+      @if (alertesTotalRegion() > 0) {
+        <span class="badge alerte">
+          <mat-icon>error_outline</mat-icon>
+          {{ alertesTotalRegion() }} alerte(s)
+        </span>
+      }
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
+      <p>Chargement des données région...</p>
+    </div>
+  } @else {
+
+    <!-- KPIs globaux région -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <mat-icon style="color:#e30613">store</mat-icon>
+        <div>
+          <p class="kpi-value">{{ magasinsData().length }}</p>
+          <p class="kpi-label">Magasins</p>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-icon style="color:#2e7d32">account_balance_wallet</mat-icon>
+        <div>
+          <p class="kpi-value">{{ caTotalRegion() | number:'1.0-0' }} TND</p>
+          <p class="kpi-label">CA Total Région</p>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-icon style="color:#1565c0">shopping_cart</mat-icon>
+        <div>
+          <p class="kpi-value">{{ ventesTotalRegion() }}</p>
+          <p class="kpi-label">Ventes Totales</p>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-danger">
+        <mat-icon style="color:#c62828">warning</mat-icon>
+        <div>
+          <p class="kpi-value">{{ alertesTotalRegion() + rupturesTotalRegion() }}</p>
+          <p class="kpi-label">Alertes Région</p>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Onglets -->
+    <mat-tab-group animationDuration="200ms" color="warn">
+
+      <!-- ===== ONGLET COMPARAISON ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>compare_arrows</mat-icon>
+          &nbsp;Comparaison magasins
+        </ng-template>
+
+        <div class="tab-content">
+
+          <!-- Graphique comparatif -->
+          <div class="charts-row">
+            <mat-card class="chart-card">
+              <mat-card-content>
+                <canvas #compareChart></canvas>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card">
+              <mat-card-content>
+                <canvas #stockChart></canvas>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Table comparaison -->
+          <mat-card class="table-card">
+            <mat-card-header>
+              <mat-card-title>Tableau de comparaison</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <table mat-table [dataSource]="magasinsData()">
+
+                <ng-container matColumnDef="magasin">
+                  <th mat-header-cell *matHeaderCellDef>Magasin</th>
+                  <td mat-cell *matCellDef="let d">
+                    <div class="magasin-cell">
+                      <mat-icon>store</mat-icon>
+                      <strong>{{ d.magasin.nom }}</strong>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="caJour">
+                  <th mat-header-cell *matHeaderCellDef>CA Jour</th>
+                  <td mat-cell *matCellDef="let d">
+                    {{ d.kpi.caJour | number:'1.0-0' }} TND
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="caMois">
+                  <th mat-header-cell *matHeaderCellDef>CA Mois</th>
+                  <td mat-cell *matCellDef="let d">
+                    {{ d.kpi.caMois | number:'1.0-0' }} TND
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="caTotal">
+                  <th mat-header-cell *matHeaderCellDef>CA Total</th>
+                  <td mat-cell *matCellDef="let d">
+                    <strong>{{ d.kpi.caTotal | number:'1.0-0' }} TND</strong>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="ventes">
+                  <th mat-header-cell *matHeaderCellDef>Ventes</th>
+                  <td mat-cell *matCellDef="let d">{{ d.kpi.nombreVentes }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="stock">
+                  <th mat-header-cell *matHeaderCellDef>Stock global</th>
+                  <td mat-cell *matCellDef="let d">{{ d.stockTotal }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="alertes">
+                  <th mat-header-cell *matHeaderCellDef>Alertes</th>
+                  <td mat-cell *matCellDef="let d">
+                    @if (getAlertesTotal(d) > 0) {
+                      <span class="alerte-chip">
+                        <mat-icon>warning</mat-icon>
+                        {{ getAlertesTotal(d) }}
+                      </span>
+                    } @else {
+                      <span class="ok-chip">
+                        <mat-icon>check_circle</mat-icon>
+                        OK
+                      </span>
+                    }
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="colsComparaison"></tr>
+                <tr mat-row *matRowDef="let row; columns: colsComparaison;"></tr>
+              </table>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </mat-tab>
+
+      <!-- ===== ONGLET PAR MAGASIN ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>store</mat-icon>
+          &nbsp;Détail par magasin
+        </ng-template>
+
+        <div class="tab-content">
+          @for (d of magasinsData(); track d.magasin.id) {
+            <mat-card class="magasin-detail-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>store</mat-icon>
+                  {{ d.magasin.nom }}
+                  <span class="code-chip">{{ d.magasin.code }}</span>
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="detail-kpis">
+                  <div class="detail-kpi">
+                    <p class="detail-val">{{ d.kpi.caJour | number:'1.0-0' }} TND</p>
+                    <p class="detail-lbl">CA Jour</p>
+                  </div>
+                  <div class="detail-kpi">
+                    <p class="detail-val">{{ d.kpi.caMois | number:'1.0-0' }} TND</p>
+                    <p class="detail-lbl">CA Mois</p>
+                  </div>
+                  <div class="detail-kpi">
+                    <p class="detail-val">{{ d.kpi.caTotal | number:'1.0-0' }} TND</p>
+                    <p class="detail-lbl">CA Total</p>
+                  </div>
+                  <div class="detail-kpi">
+                    <p class="detail-val">{{ d.stockTotal }}</p>
+                    <p class="detail-lbl">Stock</p>
+                  </div>
+                  <div class="detail-kpi"
+                       [class.danger]="d.ruptures.length > 0">
+                    <p class="detail-val">{{ d.ruptures.length }}</p>
+                    <p class="detail-lbl">Ruptures</p>
+                  </div>
+                  <div class="detail-kpi"
+                       [class.warning]="d.alertes.length > 0">
+                    <p class="detail-val">{{ d.alertes.length }}</p>
+                    <p class="detail-lbl">Alertes</p>
+                  </div>
+                </div>
+
+                <!-- Alertes du magasin -->
+                @if (d.ruptures.length > 0) {
+                  <div class="alert-section rupture-section">
+                    <p class="alert-title">
+                      <mat-icon>warning</mat-icon>
+                      Ruptures de stock
+                    </p>
+                    @for (p of d.ruptures; track p.id) {
+                      <span class="produit-chip rupture">{{ p.nom }}</span>
+                    }
+                  </div>
+                }
+
+                @if (d.alertes.length > 0) {
+                  <div class="alert-section alerte-section">
+                    <p class="alert-title">
+                      <mat-icon>error_outline</mat-icon>
+                      Stock critique
+                    </p>
+                    @for (p of d.alertes; track p.id) {
+                      <span class="produit-chip alerte">
+                        {{ p.nom }} ({{ p.stockActuel }})
+                      </span>
+                    }
+                  </div>
+                }
+
+                <!-- Lien vers interface du magasin -->
+                <div style="margin-top:12px">
+                  <a mat-stroked-button color="primary"
+                     [routerLink]="['/metier', d.magasin.nom.toLowerCase()]">
+                    <mat-icon>open_in_new</mat-icon>
+                    Gérer {{ d.magasin.nom }}
+                  </a>
+                </div>
+
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- ===== ONGLET ALERTES ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>notifications_active</mat-icon>
+          &nbsp;Alertes région
+          @if (alertesTotalRegion() + rupturesTotalRegion() > 0) {
+            <span class="tab-badge">
+              {{ alertesTotalRegion() + rupturesTotalRegion() }}
+            </span>
+          }
+        </ng-template>
+
+        <div class="tab-content">
+          @for (d of magasinsData(); track d.magasin.id) {
+            @if (d.ruptures.length > 0 || d.alertes.length > 0) {
+              <mat-card class="alerte-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>store</mat-icon>
+                    {{ d.magasin.nom }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+
+                  @if (d.ruptures.length > 0) {
+                    <div class="alert-block rupture-block">
+                      <p class="alert-block-title">
+                        <mat-icon>warning</mat-icon>
+                        {{ d.ruptures.length }} produit(s) en rupture
+                      </p>
+                      @for (p of d.ruptures; track p.id) {
+                        <div class="alert-item">
+                          <mat-icon>remove_shopping_cart</mat-icon>
+                          <span>{{ p.nom }}</span>
+                          <span class="stock-zero">Stock : 0</span>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (d.alertes.length > 0) {
+                    <div class="alert-block alerte-block">
+                      <p class="alert-block-title">
+                        <mat-icon>error_outline</mat-icon>
+                        {{ d.alertes.length }} produit(s) en stock critique
+                      </p>
+                      @for (p of d.alertes; track p.id) {
+                        <div class="alert-item">
+                          <mat-icon>inventory_2</mat-icon>
+                          <span>{{ p.nom }}</span>
+                          <span class="stock-low">
+                            Stock : {{ p.stockActuel }} / seuil : {{ p.seuilAlerte }}
+                          </span>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                </mat-card-content>
+              </mat-card>
+            }
+          }
+
+          @if (alertesTotalRegion() + rupturesTotalRegion() === 0) {
+            <div class="empty-state">
+              <mat-icon style="color:#2e7d32">check_circle</mat-icon>
+              <p>Aucune alerte — tous les stocks sont OK ✅</p>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  }
+
+</div>

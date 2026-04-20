@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { RegionViewComponent } from './region-view.component';
+
+describe('RegionViewComponent', () => {
+  let component: RegionViewComponent;
+  let fixture: ComponentFixture<RegionViewComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [RegionViewComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RegionViewComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

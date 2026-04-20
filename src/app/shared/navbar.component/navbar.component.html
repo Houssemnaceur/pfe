@@ -1,0 +1,39 @@
+<mat-toolbar class="navbar">
+
+  <!-- Toggle sidebar -->
+  <button mat-icon-button (click)="onToggleSidebar()" class="menu-btn">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Logo -->
+  <div class="navbar-brand">
+    <mat-icon class="brand-icon">store</mat-icon>
+    <span class="brand-name">GEMONET</span>
+    <span class="brand-sub">Monoprix Tunisie</span>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- Menu utilisateur -->
+  <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+    <div class="user-avatar">{{ getInitials() }}</div>
+    <div class="user-info">
+      <span class="user-name">{{ user?.prenom }} {{ user?.nom }}</span>
+      <span class="user-role">{{ user?.role }}</span>
+    </div>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <div class="menu-header">
+      <p class="menu-name">{{ user?.prenom }} {{ user?.nom }}</p>
+      <p class="menu-email">{{ user?.email }}</p>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon color="warn">logout</mat-icon>
+      <span>Se déconnecter</span>
+    </button>
+  </mat-menu>
+
+</mat-toolbar>
